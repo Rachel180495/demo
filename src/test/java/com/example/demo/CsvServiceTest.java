@@ -1,12 +1,13 @@
 package com.example.demo;
 
-import com.example.demo.*;
+import com.example.demo.model.City;
+import com.example.demo.model.Player;
+import com.example.demo.repository.CityRepository;
+import com.example.demo.repository.PlayerRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;

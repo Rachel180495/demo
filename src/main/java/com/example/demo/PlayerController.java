@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import com.example.demo.model.Player;
+import com.example.demo.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

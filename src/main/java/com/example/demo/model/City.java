@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.model;
 
 import lombok.Data;
 
@@ -9,10 +9,9 @@ import javax.persistence.Id;
 
 @Entity
 @Data
-public class Country  {
+public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long countryId;
+    private Long cityId;
     private String name;
-
 }

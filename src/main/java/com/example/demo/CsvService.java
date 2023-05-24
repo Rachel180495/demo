@@ -1,6 +1,12 @@
 package com.example.demo;
 
 
+import com.example.demo.model.City;
+import com.example.demo.model.Country;
+import com.example.demo.model.Player;
+import com.example.demo.model.State;
+import com.example.demo.repository.CityRepository;
+import com.example.demo.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Scope;
@@ -15,7 +21,6 @@ import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Scope(proxyMode = ScopedProxyMode.INTERFACES)
 @Transactional
