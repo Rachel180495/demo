@@ -9,8 +9,6 @@ import com.example.demo.repository.CityRepository;
 import com.example.demo.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
@@ -29,7 +27,6 @@ public class CsvService implements CommandLineRunner {
     @PersistenceContext
     private final EntityManager entityManager;
     private static final int BATCH_SIZE = 1000;
-    private int FieldsNumber;
 
     @Autowired
     public CsvService(PlayerRepository playerRepository, CityRepository cityRepository, EntityManager entityManager) {
@@ -45,7 +42,7 @@ public class CsvService implements CommandLineRunner {
     }
 
     @Transactional
-    private void loadDataFromCSV() {
+    public void loadDataFromCSV() {
         try (InputStream inputStream = getResourceAsStream()) {
             assert inputStream != null;
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
@@ -60,8 +57,8 @@ public class CsvService implements CommandLineRunner {
                 reader.readLine();
                 while ((line = reader.readLine()) != null) {
                     String[] data = line.split(",");
-                    FieldsNumber = 24;
-                    if (data.length == FieldsNumber) {
+                    int fieldsNumber = 24;
+                    if (data.length == fieldsNumber) {
                         String playerId = data[0];
                         boolean playerExistsInBatch = playerBatch.stream()
                                 .anyMatch(player -> player.getPlayerID().equals(playerId));
@@ -72,17 +69,18 @@ public class CsvService implements CommandLineRunner {
 
                             if (!playerExistsInDatabase) {
                                 Long birthYear = calculateLong(data[1]);
-                                if(!playerValidator.isYearValid(birthYear)){
+                                if (birthYear!=null&&!playerValidator.isYearValid(birthYear)) {
                                     birthYear = null;
                                 }
                                 Long birthMonth = calculateLong(data[2]);
-                                if(!playerValidator.isMonthValid(birthMonth)){
+                                if (birthMonth!=null&&!playerValidator.isMonthValid(birthMonth)) {
                                     birthMonth = null;
                                 }
                                 Long birthDay = calculateLong(data[3]);
-                                if (!playerValidator.isDayValid(birthDay)) {
-                                    birthDay=null;
-                                }                                Country countryBirth = countryMap.computeIfAbsent(data[4], k -> {
+                                if (birthDay!=null&&!playerValidator.isDayValid(birthDay)) {
+                                    birthDay = null;
+                                }
+                                Country countryBirth = countryMap.computeIfAbsent(data[4], k -> {
                                     Country newCountry = new Country();
                                     newCountry.setName(data[4]);
                                     return newCountry;
@@ -98,16 +96,16 @@ public class CsvService implements CommandLineRunner {
                                     return newCity;
                                 });
                                 Long deathYear = calculateLong(data[7]);
-                                if(!playerValidator.isYearValid(deathYear)){
+                                if (deathYear!= null&& !playerValidator.isYearValid(deathYear)) {
                                     deathYear = null;
                                 }
                                 Long deathMonth = calculateLong(data[8]);
-                                if(!playerValidator.isMonthValid(deathMonth)){
+                                if (deathMonth!=null &&!playerValidator.isMonthValid(deathMonth)) {
                                     deathMonth = null;
                                 }
                                 Long deathDay = calculateLong(data[9]);
-                                if (!playerValidator.isDayValid(deathDay)) {
-                                    deathDay=null;
+                                if (deathDay!=null&&!playerValidator.isDayValid(deathDay)) {
+                                    deathDay = null;
                                 }
                                 Country countryDeath = countryMap.computeIfAbsent(data[10], k -> {
                                     Country newCountry = new Country();
@@ -128,10 +126,10 @@ public class CsvService implements CommandLineRunner {
                                 String nameLast = data[14];
                                 String nameGiven = data[15];
                                 Long weight = calculateLong(data[16]);
-                                if(!playerValidator.isWeightValid(weight))
+                                if (weight!=null&& !playerValidator.isWeightValid(weight))
                                     weight = null;
                                 Long height = calculateLong(data[17]);
-                                if(!playerValidator.isHeightValid(height))
+                                if (height!=null &&!playerValidator.isHeightValid(height))
                                     height = null;
                                 Character bats = calculateChar(data[18]);
                                 Character _throws = calculateChar(data[19]);
@@ -174,12 +172,14 @@ public class CsvService implements CommandLineRunner {
                                 }
                             }
                         }
-                        saveCityBatch(new ArrayList<>(cityMap.values()));
-                        saveCountryBatch(new ArrayList<>(countryMap.values()));
-                        saveStateBatch(new ArrayList<>(stateMap.values()));
-                        savePlayerBatch(playerBatch);
                     }
                 }
+
+                saveCityBatch(new ArrayList<>(cityMap.values()));
+                saveCountryBatch(new ArrayList<>(countryMap.values()));
+                saveStateBatch(new ArrayList<>(stateMap.values()));
+                savePlayerBatch(playerBatch);
+
             }
         } catch (IOException | ParseException e) {
             e.printStackTrace();
@@ -190,25 +190,19 @@ public class CsvService implements CommandLineRunner {
         return getClass().getResourceAsStream("/player.csv");
     }
 
-    private Date calculateDate(String data) throws ParseException {
-        if(!data.isBlank())
-            return  new SimpleDateFormat("yyyy-MM-dd").parse(data);
+    Date calculateDate(String data) throws ParseException {
+        if (!data.isBlank())
+            return new SimpleDateFormat("yyyy-MM-dd").parse(data);
         return null;
     }
 
-    private Character calculateChar(String data) {
+    Character calculateChar(String data) {
         if (!data.isBlank())
             return data.charAt(0);
         return null;
     }
 
-    private Double calculateDouble(String data) {
-        if (!data.isBlank())
-            return Double.parseDouble(data);
-        return null;
-    }
-
-    private Long calculateLong(String data) {
+    Long calculateLong(String data) {
         if (!data.isBlank())
             return Long.parseLong(data);
         return null;
@@ -219,16 +213,19 @@ public class CsvService implements CommandLineRunner {
         playerBatch.forEach(entityManager::persist);
         entityManager.setFlushMode(FlushModeType.COMMIT);
     }
+
     @Transactional
     private void saveCityBatch(List<City> cityBatch) {
         cityBatch.forEach(entityManager::persist);
         entityManager.setFlushMode(FlushModeType.COMMIT);
     }
+
     @Transactional
     private void saveStateBatch(List<State> stateBatch) {
         stateBatch.forEach(entityManager::persist);
         entityManager.setFlushMode(FlushModeType.COMMIT);
     }
+
     @Transactional
     private void saveCountryBatch(List<Country> countryBatch) {
         countryBatch.forEach(entityManager::persist);
