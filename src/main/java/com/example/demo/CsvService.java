@@ -22,8 +22,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@Scope(proxyMode = ScopedProxyMode.INTERFACES)
-@Transactional
 @Component
 public class CsvService implements CommandLineRunner {
     private final PlayerRepository playerRepository;
