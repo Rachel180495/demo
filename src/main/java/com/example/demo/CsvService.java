@@ -74,9 +74,17 @@ public class CsvService implements CommandLineRunner {
 
                             if (!playerExistsInDatabase) {
                                 Long birthYear = calculateLong(data[1]);
+                                if(!playerValidator.isYearValid(birthYear)){
+                                    birthYear = null;
+                                }
                                 Long birthMonth = calculateLong(data[2]);
+                                if(!playerValidator.isMonthValid(birthMonth)){
+                                    birthMonth = null;
+                                }
                                 Long birthDay = calculateLong(data[3]);
-                                Country countryBirth = countryMap.computeIfAbsent(data[4], k -> {
+                                if (!playerValidator.isDayValid(birthDay)) {
+                                    birthDay=null;
+                                }                                Country countryBirth = countryMap.computeIfAbsent(data[4], k -> {
                                     Country newCountry = new Country();
                                     newCountry.setName(data[4]);
                                     return newCountry;
@@ -92,8 +100,17 @@ public class CsvService implements CommandLineRunner {
                                     return newCity;
                                 });
                                 Long deathYear = calculateLong(data[7]);
+                                if(!playerValidator.isYearValid(deathYear)){
+                                    deathYear = null;
+                                }
                                 Long deathMonth = calculateLong(data[8]);
+                                if(!playerValidator.isMonthValid(deathMonth)){
+                                    deathMonth = null;
+                                }
                                 Long deathDay = calculateLong(data[9]);
+                                if (!playerValidator.isDayValid(deathDay)) {
+                                    deathDay=null;
+                                }
                                 Country countryDeath = countryMap.computeIfAbsent(data[10], k -> {
                                     Country newCountry = new Country();
                                     newCountry.setName(data[10]);
@@ -112,8 +129,12 @@ public class CsvService implements CommandLineRunner {
                                 String nameFirst = data[13];
                                 String nameLast = data[14];
                                 String nameGiven = data[15];
-                                Double weight = calculateDouble(data[16]);
-                                Double height = calculateDouble(data[17]);
+                                Long weight = calculateLong(data[16]);
+                                if(!playerValidator.isWeightValid(weight))
+                                    weight = null;
+                                Long height = calculateLong(data[17]);
+                                if(!playerValidator.isHeightValid(height))
+                                    height = null;
                                 Character bats = calculateChar(data[18]);
                                 Character _throws = calculateChar(data[19]);
                                 Date debut = calculateDate(data[20]);
@@ -127,6 +148,7 @@ public class CsvService implements CommandLineRunner {
                                 player.setBirthYear(birthYear);
                                 player.setBirthMonth(birthMonth);
                                 player.setBirthDay(birthDay);
+                                player.setBirthState(stateBirth);
                                 player.setBirthCountry(countryBirth);
                                 player.setBirthCity(cityBirth);
                                 player.setDeathYear(deathYear);

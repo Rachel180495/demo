@@ -42,8 +42,8 @@ public class Player {
     String nameFirst;
     String nameLast;
     String nameGiven;
-    Double weight;
-    Double height;
+    Long weight;
+    Long height;
     Character bats;
     Character _throws;
     Date debut;

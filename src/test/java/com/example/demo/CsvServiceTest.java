@@ -7,6 +7,7 @@ import com.example.demo.repository.PlayerRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.persistence.EntityManager;
@@ -41,9 +42,8 @@ public class CsvServiceTest {
     public void testLoadDataFromCSV() throws Exception {
         // Arrange
         InputStream inputStream = new ByteArrayInputStream(getCSVData().getBytes(StandardCharsets.UTF_8));
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
-        when(csvService.getResourceAsStream()).thenReturn(inputStream);
+        CsvService csvService1 = Mockito.spy(csvService);
+        Mockito.doReturn(inputStream).when(csvService1).getResourceAsStream();
         when(cityRepository.save(any(City.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(playerRepository.save(any(Player.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(entityManager.getFlushMode()).thenReturn(FlushModeType.AUTO);
