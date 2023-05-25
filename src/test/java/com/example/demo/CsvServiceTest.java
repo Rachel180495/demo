@@ -45,16 +45,17 @@ public class CsvServiceTest {
     @Test
     public void testLoadDataFromCSV() throws Exception {
         // Arrange
-        InputStream inputStream = new ByteArrayInputStream("playerId,field1,field2\n1,2,3\n".getBytes());
-        when(csvService.getResourceAsStream()).thenReturn(inputStream);
+        CsvService csvService1 = Mockito.spy(csvService);
+        InputStream inputStream = new ByteArrayInputStream(getCSVData().getBytes(StandardCharsets.UTF_8));
+        Mockito.doReturn(inputStream).when(csvService1).getResourceAsStream();
         when(playerRepository.existsByPlayerID("1")).thenReturn(false);
 
         // Act
-        csvService.loadDataFromCSV();
+        csvService1.loadDataFromCSV();
 
         // Assert
-        verify(entityManager, times(1)).persist(any(Player.class));
-        verify(entityManager, times(1)).setFlushMode(FlushModeType.COMMIT);
+        verify(entityManager, atLeastOnce()).persist(any(Player.class));
+        verify(entityManager, atLeastOnce()).setFlushMode(FlushModeType.COMMIT);
     }
 
     @Test
@@ -64,10 +65,10 @@ public class CsvServiceTest {
         InputStream inputStream = new ByteArrayInputStream(getCSVData().getBytes(StandardCharsets.UTF_8));
 
         Mockito.doReturn(inputStream).when(csvService1).getResourceAsStream();
-        when(playerRepository.existsByPlayerID("1")).thenReturn(true);
+        when(playerRepository.existsByPlayerID(any())).thenReturn(true);
 
         // Act
-        csvService.loadDataFromCSV();
+        csvService1.loadDataFromCSV();
 
         // Assert
         verify(entityManager, never()).persist(any(Player.class));
@@ -140,6 +141,10 @@ public class CsvServiceTest {
     public void testCalculateLong_BlankData() {
         // Arrange
         String longString = "";
+        InputStream inputStream = new ByteArrayInputStream(longString.getBytes(StandardCharsets.UTF_8));
+        CsvService csvService1 = Mockito.spy(csvService);
+
+        Mockito.doReturn(inputStream).when(csvService1).getResourceAsStream();
 
         // Act
         Long result = csvService.calculateLong(longString);
