@@ -9,6 +9,8 @@ import com.example.demo.repository.CityRepository;
 import com.example.demo.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
@@ -20,6 +22,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+
+@Scope(proxyMode = ScopedProxyMode.INTERFACES)
+@Transactional
 @Component
 public class CsvService implements CommandLineRunner {
     private final PlayerRepository playerRepository;
